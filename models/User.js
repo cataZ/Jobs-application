@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const UserSchema = new mongoose.Schema({
 	name: {
@@ -29,5 +30,17 @@ UserSchema.pre('save', async function (next) {
 	this.password = await bcrypt.hash(this.password, salt)
 	next()
 })
+
+UserSchema.methods.createJWT = function () {
+	//en el jwt sign es todo lo que se va a enviar al frontEnd
+	//1, objeto que se envia, 2 string tokenizador, 3 parametros.
+	return jwt.sign(
+		{ userId: this._id, name: this.name },
+		process.env.JWT_SECRET,
+		{
+			expiresIn: process.env.JWT_LIFETIME,
+		}
+	)
+}
 
 module.exports = mongoose.model('User', UserSchema)
