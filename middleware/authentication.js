@@ -13,6 +13,11 @@ const auth = async (req, res, next) => {
 	try {
 		const payload = jwt.verify(token, process.env.JWT_SECRET)
 
+		/*  Otra forma de cargar al usuario actual, agarrando sus datos desde la DB
+		const user = User.findById(payload.id).select('-password')
+		req.user = user
+		*/
+
 		//agregar usuario a la ruta de jobs
 		req.user = { userId: payload.userId, name: payload.name }
 		next()
